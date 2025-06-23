@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { parseDelayInSeconds } from "../utils/timeUtils";
 
 type NotificationType = "info" | "warning" | "error";
 
@@ -6,7 +7,7 @@ interface NotificationFormState {
   title: string;
   body: string;
   type: NotificationType;
-  seconds: string;
+  seconds: number;
   setTitle: (title: string) => void;
   setBody: (body: string) => void;
   setType: (type: NotificationType) => void;
@@ -19,17 +20,17 @@ export const useNotificationFormStore = create<NotificationFormState>(
     title: "",
     body: "",
     type: "info",
-    seconds: "",
+    seconds: 0,
     setTitle: (title) => set({ title }),
     setBody: (body) => set({ body }),
     setType: (type) => set({ type }),
-    setSeconds: (seconds) => set({ seconds }),
+    setSeconds: (seconds) => set({ seconds: parseDelayInSeconds(seconds) }),
     reset: () =>
       set({
         title: "",
         body: "",
         type: "info",
-        seconds: "",
+        seconds: 0,
       }),
   })
 );

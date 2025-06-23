@@ -1,6 +1,11 @@
 import { Button, Text } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, TextInput, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import { useNotificationFormStore } from "../../stores/useNotificationFormStore";
 
 export function Send() {
@@ -18,16 +23,14 @@ export function Send() {
   } = useNotificationFormStore();
 
   const handleSendNotification = () => {
-    const delayInSeconds = Math.max(0, parseInt(seconds) || 0);
-
     // TODO: Trigger local push notification using `title`, `body`, `type`, and `delayInSeconds`
-    console.log({ title, body, type, delayInSeconds });
+    console.log({ title, body, type, seconds });
 
     reset();
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Text style={styles.label}>Notification Title</Text>
       <TextInput
         style={[
@@ -82,7 +85,7 @@ export function Send() {
         placeholder="Enter seconds - Now if missing"
         placeholderTextColor={colors.border}
         keyboardType="numeric"
-        value={seconds}
+        value={seconds.toString()}
         onChangeText={(text) => {
           const numeric = text.replace(/[^0-9]/g, "");
           setSeconds(numeric);
@@ -94,7 +97,7 @@ export function Send() {
           Send Local Notification
         </Button>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
