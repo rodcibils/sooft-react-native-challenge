@@ -1,20 +1,29 @@
 import { Button, Text } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
+import { useNotificationFormStore } from "../../stores/useNotificationFormStore";
 
 export function Send() {
   const { colors } = useTheme();
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [type, setType] = useState<"info" | "warning" | "error">("info");
-  const [seconds, setSeconds] = useState("");
+  const {
+    title,
+    body,
+    type,
+    seconds,
+    setTitle,
+    setBody,
+    setType,
+    setSeconds,
+    reset,
+  } = useNotificationFormStore();
 
   const handleSendNotification = () => {
     const delayInSeconds = Math.max(0, parseInt(seconds) || 0);
 
     // TODO: Trigger local push notification using `title`, `body`, `type`, and `delayInSeconds`
     console.log({ title, body, type, delayInSeconds });
+
+    reset();
   };
 
   return (
@@ -26,9 +35,11 @@ export function Send() {
           { borderColor: colors.border, color: colors.text },
         ]}
         placeholder="Enter title"
+        placeholderTextColor={colors.border}
         value={title}
         onChangeText={setTitle}
       />
+
       <Text style={styles.label}>Notification Body</Text>
       <TextInput
         style={[
@@ -37,10 +48,12 @@ export function Send() {
           { borderColor: colors.border, color: colors.text },
         ]}
         placeholder="Enter body text"
+        placeholderTextColor={colors.border}
         value={body}
         onChangeText={setBody}
         multiline
       />
+
       <Text style={styles.label}>Notification Type</Text>
       <TextInput
         style={[
@@ -48,6 +61,7 @@ export function Send() {
           { borderColor: colors.border, color: colors.text },
         ]}
         placeholder="info | warning | error"
+        placeholderTextColor={colors.border}
         value={type}
         onChangeText={(text) => {
           const sanitized = text.toLowerCase();
@@ -58,6 +72,7 @@ export function Send() {
           }
         }}
       />
+
       <Text style={styles.label}>Seconds Delay</Text>
       <TextInput
         style={[
@@ -65,6 +80,7 @@ export function Send() {
           { borderColor: colors.border, color: colors.text },
         ]}
         placeholder="Enter seconds - Now if missing"
+        placeholderTextColor={colors.border}
         keyboardType="numeric"
         value={seconds}
         onChangeText={(text) => {
@@ -72,6 +88,7 @@ export function Send() {
           setSeconds(numeric);
         }}
       />
+
       <View style={styles.buttonWrapper}>
         <Button onPress={handleSendNotification}>
           Send Local Notification
