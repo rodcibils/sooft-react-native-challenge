@@ -1,7 +1,6 @@
 import { create } from "zustand";
+import { NotificationType } from "../model/notification";
 import { parseDelayInSeconds } from "../utils/timeUtils";
-
-type NotificationType = "info" | "warning" | "error";
 
 interface NotificationFormState {
   title: string;
@@ -19,7 +18,7 @@ export const useNotificationFormStore = create<NotificationFormState>(
   (set) => ({
     title: "",
     body: "",
-    type: "info",
+    type: NotificationType.INFO,
     seconds: 0,
     setTitle: (title) => set({ title }),
     setBody: (body) => set({ body }),
@@ -29,7 +28,7 @@ export const useNotificationFormStore = create<NotificationFormState>(
       set({
         title: "",
         body: "",
-        type: "info",
+        type: NotificationType.INFO,
         seconds: 0,
       }),
   })

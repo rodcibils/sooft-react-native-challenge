@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { NotificationType } from "../../model/notification";
 import { useNotificationFormStore } from "../../stores/useNotificationFormStore";
 
 export function Send() {
@@ -71,7 +72,7 @@ export function Send() {
           if (["info", "warning", "error"].includes(sanitized)) {
             setType(sanitized as typeof type);
           } else {
-            setType("info");
+            setType(NotificationType.INFO);
           }
         }}
       />
