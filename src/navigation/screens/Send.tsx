@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Checkbox from "../../components/Checkbox";
 import { NotificationType } from "../../model/notification";
 import { useNotificationFormStore } from "../../stores/useNotificationFormStore";
 
@@ -59,23 +60,18 @@ export function Send() {
       />
 
       <Text style={styles.label}>Notification Type</Text>
-      <TextInput
-        style={[
-          styles.input,
-          { borderColor: colors.border, color: colors.text },
-        ]}
-        placeholder="info | warning | error"
-        placeholderTextColor={colors.border}
-        value={type}
-        onChangeText={(text) => {
-          const sanitized = text.toLowerCase();
-          if (["info", "warning", "error"].includes(sanitized)) {
-            setType(sanitized as typeof type);
-          } else {
-            setType(NotificationType.INFO);
-          }
-        }}
-      />
+      <View>
+        {Object.values(NotificationType).map((t) => (
+          <Checkbox
+            key={t}
+            label={t}
+            isChecked={t === type}
+            onPress={() => {
+              setType(t);
+            }}
+          />
+        ))}
+      </View>
 
       <Text style={styles.label}>Seconds Delay</Text>
       <TextInput
