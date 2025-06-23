@@ -7,11 +7,13 @@ import {
   View,
 } from "react-native";
 import Checkbox from "../../components/Checkbox";
+import useNotifications from "../../hooks/useNotifications";
 import { NotificationType } from "../../model/notification";
 import { useNotificationFormStore } from "../../stores/useNotificationFormStore";
 
 export function Send() {
   const { colors } = useTheme();
+  const { sendLocalNotification } = useNotifications();
   const {
     title,
     body,
