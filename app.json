@@ -10,14 +10,14 @@
     "scheme": "sooftrnchallenge",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.satya164.reactnavigationtemplate"
+      "bundleIdentifier": "com.rodcibils.sooftrnchallenge"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.satya164.reactnavigationtemplate"
+      "package": "com.rodcibils.sooftrnchallenge"
     },
     "web": {
       "favicon": "./assets/favicon.png"
