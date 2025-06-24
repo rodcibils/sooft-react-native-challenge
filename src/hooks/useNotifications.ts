@@ -1,6 +1,7 @@
 import notifee from "@notifee/react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Platform } from "react-native";
+import { Notification } from "../model/notification";
 
 export default function useNotifications() {
   const [channelId, setChannelId] = useState<string>("");
@@ -17,11 +18,22 @@ export default function useNotifications() {
     }
   }, []);
 
-  const sendLocalNotification = useCallback(() => {
-    /**
-     * TODO
-     */
-  }, []);
+  const sendLocalNotification = useCallback(
+    async (data: Notification) => {
+      await notifee.displayNotification({
+        title: data.title,
+        body: data.body,
+        android: {
+          channelId,
+          smallIcon: "ic_launcher",
+          pressAction: {
+            id: "default",
+          },
+        },
+      });
+    },
+    [channelId]
+  );
 
   useEffect(() => {
     setupNotifications()

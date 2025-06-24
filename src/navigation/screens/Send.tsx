@@ -27,10 +27,19 @@ export function Send() {
   } = useNotificationFormStore();
 
   const handleSendNotification = () => {
-    // TODO: Trigger local push notification using `title`, `body`, `type`, and `delayInSeconds`
-    console.log({ title, body, type, seconds });
-
-    reset();
+    sendLocalNotification({
+      title,
+      body,
+      type,
+      timestampMs: Date.now() + seconds * 1000,
+    })
+      .then(() => {
+        console.debug("sendLocalNotification", "Done");
+        reset();
+      })
+      .catch((err) => {
+        console.error("sendLocalNotification", err);
+      });
   };
 
   return (
