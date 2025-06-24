@@ -17,6 +17,7 @@ export function Inbox() {
     <View style={styles.container}>
       {inbox.length > 0 ? (
         <FlatList
+          style={styles.container}
           data={inbox}
           renderItem={({ item }) => (
             <NotificationItem
@@ -31,9 +32,11 @@ export function Inbox() {
           keyExtractor={(item) => JSON.stringify(item.timestampMs)}
         />
       ) : (
-        <Text style={styles.emptyText}>
-          No notifications to display here yet
-        </Text>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>
+            No notifications to display here yet
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -41,6 +44,9 @@ export function Inbox() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
