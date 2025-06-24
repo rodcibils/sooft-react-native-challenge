@@ -1,4 +1,4 @@
-import notifee from "@notifee/react-native";
+import notifee, { AuthorizationStatus } from "@notifee/react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { Notification } from "../model/notification";
@@ -6,16 +6,12 @@ import { Notification } from "../model/notification";
 export default function useNotifications() {
   const [channelId, setChannelId] = useState<string>("");
 
-  const setupNotifications = useCallback(async () => {
-    if (Platform.OS === "android") {
-      const id = await notifee.createChannel({
-        id: "default",
-        name: "Default Channel",
-      });
-      setChannelId(id);
-    } else if (Platform.OS === "ios") {
-      await notifee.requestPermission();
-    }
+  const hasPermission = useCallback(async () => {
+    const settings = await notifee.getNotificationSettings();
+    const arePermissionsGranted =
+      settings.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
+      settings.authorizationStatus === AuthorizationStatus.PROVISIONAL;
+    return arePermissionsGranted;
   }, []);
 
   const sendLocalNotification = useCallback(
@@ -36,6 +32,16 @@ export default function useNotifications() {
   );
 
   useEffect(() => {
+    const setupNotifications = async () => {
+      await notifee.requestPermission();
+      if (Platform.OS === "android") {
+        const id = await notifee.createChannel({
+          id: "default",
+          name: "Default Channel",
+        });
+        setChannelId(id);
+      }
+    };
     setupNotifications()
       .then(() => {
         console.debug("setupNotifications", "Done");
@@ -43,7 +49,7 @@ export default function useNotifications() {
       .catch((err) => {
         console.error("setupNotifications", err);
       });
-  }, [setupNotifications]);
+  }, []);
 
-  return { sendLocalNotification };
+  return { sendLocalNotification, hasPermission };
 }

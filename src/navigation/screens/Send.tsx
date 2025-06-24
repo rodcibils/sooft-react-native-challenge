@@ -17,7 +17,7 @@ import { hasTitleAndBody } from "../../utils/notificationUtils";
 
 export function Send() {
   const { colors } = useTheme();
-  const { sendLocalNotification } = useNotifications();
+  const { hasPermission, sendLocalNotification } = useNotifications();
   const {
     title,
     body,
@@ -32,7 +32,7 @@ export function Send() {
     reset,
   } = useNotificationFormStore();
 
-  const handleSendNotification = useCallback(() => {
+  const validateForm = useCallback((title: string, body: string): boolean => {
     if (!hasTitleAndBody(title, body)) {
       Alert.alert(
         "Title and body required",
@@ -43,35 +43,10 @@ export function Send() {
           },
         ]
       );
-      return;
+      return false;
     }
-    setLoading(true);
-    sendLocalNotification({
-      title,
-      body,
-      type,
-      timestampMs: Date.now() + seconds * 1000,
-    })
-      .then(() => {
-        console.debug("sendLocalNotification", "Done");
-        reset();
-      })
-      .catch((err) => {
-        console.error("sendLocalNotification", err);
-        Alert.alert(
-          "Error sending notification",
-          "An unexpected error occurred when trying to send the notification",
-          [
-            {
-              text: "Close",
-            },
-          ]
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [body, reset, seconds, sendLocalNotification, setLoading, title, type]);
+    return true;
+  }, []);
 
   return (
     <>
@@ -133,7 +108,54 @@ export function Send() {
         />
 
         <View style={styles.buttonWrapper}>
-          <Button onPress={handleSendNotification}>
+          <Button
+            onPress={() => {
+              const isValid = validateForm(title, body);
+              if (!isValid) return;
+              const handleSend = async () => {
+                const permissionsGranted = await hasPermission();
+                if (!permissionsGranted) {
+                  Alert.alert(
+                    "Notifications Permissions Denied",
+                    "We need you to grant notifications permissions in order to be able to send notifications",
+                    [
+                      {
+                        text: "Ok",
+                      },
+                    ]
+                  );
+                  return;
+                }
+                await sendLocalNotification({
+                  title,
+                  body,
+                  type,
+                  timestampMs: Date.now() + seconds * 1000,
+                });
+              };
+              setLoading(true);
+              handleSend()
+                .then(() => {
+                  console.debug("sendLocalNotification", "Done");
+                  reset();
+                })
+                .catch((err) => {
+                  console.error("sendLocalNotification", err);
+                  Alert.alert(
+                    "Error sending notification",
+                    "An unexpected error occurred when trying to send the notification",
+                    [
+                      {
+                        text: "Close",
+                      },
+                    ]
+                  );
+                })
+                .finally(() => {
+                  setLoading(false);
+                });
+            }}
+          >
             Send Local Notification
           </Button>
         </View>
