@@ -1,6 +1,7 @@
 import { Button, Text } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import {
+  Alert,
   KeyboardAvoidingView,
   StyleSheet,
   TextInput,
@@ -10,6 +11,7 @@ import Checkbox from "../../components/Checkbox";
 import useNotifications from "../../hooks/useNotifications";
 import { NotificationType } from "../../model/notification";
 import { useNotificationFormStore } from "../../stores/useNotificationFormStore";
+import { hasTitleAndBody } from "../../utils/notificationUtils";
 
 export function Send() {
   const { colors } = useTheme();
@@ -27,6 +29,18 @@ export function Send() {
   } = useNotificationFormStore();
 
   const handleSendNotification = () => {
+    if (!hasTitleAndBody(title, body)) {
+      Alert.alert(
+        "Title and body required",
+        "Specify a title and a body in order to send a notification",
+        [
+          {
+            text: "Got it",
+          },
+        ]
+      );
+      return;
+    }
     sendLocalNotification({
       title,
       body,
