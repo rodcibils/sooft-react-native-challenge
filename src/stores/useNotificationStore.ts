@@ -6,6 +6,7 @@ interface NotificationState {
   channelId: string;
   addToInbox: (notification: Notification) => void;
   setChannelId: (channelId: string) => void;
+  markAsRead: (timestampMs: number) => void;
 }
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
@@ -17,5 +18,19 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
   setChannelId: (channelId) => {
     set({ channelId });
+  },
+  /**
+   * We're gonna assume that there cannot be multiple notifications with the
+   * same timestamp - that would allow us to use timestamp as identifier for
+   * notifications
+   */
+  markAsRead: (timestampMs) => {
+    const currentInbox = get().inbox;
+    currentInbox.forEach((i) => {
+      if (i.timestampMs === timestampMs) {
+        i.isUnread = false;
+      }
+    });
+    set({ inbox: currentInbox });
   },
 }));

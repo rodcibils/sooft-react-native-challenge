@@ -1,13 +1,22 @@
 import { Text } from "@react-navigation/elements";
 import { RouteProp, useRoute, useTheme } from "@react-navigation/native";
+import { useEffect } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { RootStackParamList } from "..";
 import NotificationIcon from "../../components/NotificationIcon";
+import { useNotificationStore } from "../../stores/useNotificationStore";
 
 export default function Detail() {
   const route = useRoute<RouteProp<RootStackParamList, "Detail">>();
   const { notification } = route.params;
   const { colors } = useTheme();
+  const { markAsRead } = useNotificationStore();
+
+  useEffect(() => {
+    if (notification.isUnread) {
+      markAsRead(notification.timestampMs);
+    }
+  }, [markAsRead, notification.isUnread, notification.timestampMs]);
 
   return (
     <ScrollView

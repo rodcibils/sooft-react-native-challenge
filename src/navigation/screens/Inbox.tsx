@@ -29,6 +29,11 @@ export function Inbox() {
               }}
             />
           )}
+          /**
+           * We're gonna assume that there cannot be multiple
+           * notifications with the same timestamp - that would allow us to
+           * use timestamp as identifier for notifications
+           */
           keyExtractor={(item) => JSON.stringify(item.timestampMs)}
         />
       ) : (
