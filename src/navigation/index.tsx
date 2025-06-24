@@ -1,10 +1,9 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  createStaticNavigation,
-  StaticParamList,
-} from "@react-navigation/native";
+import { createStaticNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Notification } from "../model/notification";
+import Detail from "./screens/Detail";
 import { Inbox } from "./screens/Inbox";
 import { NotFound } from "./screens/NotFound";
 import { Send } from "./screens/Send";
@@ -31,13 +30,19 @@ const HomeTabs = createBottomTabNavigator({
   },
 });
 
-const RootStack = createNativeStackNavigator({
+const RootStack = createNativeStackNavigator<RootStackParamList>({
   screens: {
     HomeTabs: {
       screen: HomeTabs,
       options: {
         title: "Inbox",
         headerShown: false,
+      },
+    },
+    Detail: {
+      screen: Detail,
+      options: {
+        title: "Detail",
       },
     },
     NotFound: {
@@ -54,7 +59,11 @@ const RootStack = createNativeStackNavigator({
 
 export const Navigation = createStaticNavigation(RootStack);
 
-type RootStackParamList = StaticParamList<typeof RootStack>;
+export type RootStackParamList = {
+  HomeTabs: undefined;
+  Detail: { notification: Notification };
+  NotFound: undefined;
+};
 
 declare global {
   namespace ReactNavigation {

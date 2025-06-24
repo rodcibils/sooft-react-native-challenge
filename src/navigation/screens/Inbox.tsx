@@ -1,4 +1,5 @@
 import { Text } from "@react-navigation/elements";
+import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import NotificationItem from "../../components/NotificationItem";
@@ -6,6 +7,7 @@ import useNotifications from "../../hooks/useNotifications";
 import { useNotificationStore } from "../../stores/useNotificationStore";
 
 export function Inbox() {
+  const navigation = useNavigation();
   const { setupEventListeners } = useNotifications();
   const { inbox } = useNotificationStore();
 
@@ -23,9 +25,7 @@ export function Inbox() {
             <NotificationItem
               data={item}
               onPress={() => {
-                /**
-                 * TODO
-                 */
+                navigation.navigate("Detail", { notification: item });
               }}
             />
           )}
