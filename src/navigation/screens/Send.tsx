@@ -38,16 +38,65 @@ export function Send() {
       Alert.alert(
         "Title and body required",
         "Specify a title and a body in order to send a notification",
-        [
-          {
-            text: "Got it",
-          },
-        ]
+        [{ text: "Got it" }]
       );
       return false;
     }
     return true;
   }, []);
+
+  const handleSubmit = useCallback(async () => {
+    if (!validateForm(title, body)) return;
+
+    setLoading(true);
+
+    try {
+      const permissionsGranted = await hasPermission();
+      if (!permissionsGranted) {
+        Alert.alert(
+          "Notifications Permissions Denied",
+          "We need you to grant notifications permissions in order to be able to send notifications",
+          [{ text: "Ok" }]
+        );
+        return;
+      }
+
+      if (seconds > 0) {
+        const alarmPermissionsGranted = await hasAlarmPermission();
+        if (!alarmPermissionsGranted) {
+          Alert.alert(
+            "Alarm Permissions Denied",
+            "We need you to grant alarm permissions in order to schedule notifications",
+            [{ text: "Ok" }]
+          );
+          return;
+        }
+      }
+
+      await sendLocalNotification(title, body, seconds);
+      console.debug("sendLocalNotification", "Done");
+      reset();
+    } catch (err) {
+      console.error("sendLocalNotification", err);
+      Alert.alert(
+        "Error sending notification",
+        "An unexpected error occurred when trying to send the notification",
+        [{ text: "Close" }]
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    title,
+    body,
+    seconds,
+    validateForm,
+    hasPermission,
+    hasAlarmPermission,
+    sendLocalNotification,
+    setLoading,
+    reset,
+  ]);
 
   return (
     <>
@@ -85,9 +134,7 @@ export function Send() {
               key={t}
               label={t}
               isChecked={t === type}
-              onPress={() => {
-                setType(t);
-              }}
+              onPress={() => setType(t)}
             />
           ))}
         </View>
@@ -109,66 +156,7 @@ export function Send() {
         />
 
         <View style={styles.buttonWrapper}>
-          <Button
-            onPress={() => {
-              const isValid = validateForm(title, body);
-              if (!isValid) return;
-              const handleSend = async () => {
-                const permissionsGranted = await hasPermission();
-                if (!permissionsGranted) {
-                  Alert.alert(
-                    "Notifications Permissions Denied",
-                    "We need you to grant notifications permissions in order to be able to send notifications",
-                    [
-                      {
-                        text: "Ok",
-                      },
-                    ]
-                  );
-                  return;
-                }
-                if (seconds > 0) {
-                  const alarmPermissionsGranted = await hasAlarmPermission();
-                  if (!alarmPermissionsGranted) {
-                    Alert.alert(
-                      "Alarm Permissions Denied",
-                      "We need you to grant alarm permissions in order to be able to schedule notifications",
-                      [
-                        {
-                          text: "Ok",
-                        },
-                      ]
-                    );
-                    return;
-                  }
-                }
-                await sendLocalNotification(title, body, seconds);
-              };
-              setLoading(true);
-              handleSend()
-                .then(() => {
-                  console.debug("sendLocalNotification", "Done");
-                  reset();
-                })
-                .catch((err) => {
-                  console.error("sendLocalNotification", err);
-                  Alert.alert(
-                    "Error sending notification",
-                    "An unexpected error occurred when trying to send the notification",
-                    [
-                      {
-                        text: "Close",
-                      },
-                    ]
-                  );
-                })
-                .finally(() => {
-                  setLoading(false);
-                });
-            }}
-          >
-            Send Local Notification
-          </Button>
+          <Button onPress={handleSubmit}>Send Local Notification</Button>
         </View>
       </KeyboardAvoidingView>
       <LoadingOverlay visible={isLoading} />
