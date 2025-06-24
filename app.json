@@ -17,7 +17,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.rodcibils.sooftrnchallenge"
+      "package": "com.rodcibils.sooftrnchallenge",
+      "permissions": [
+        "SCHEDULE_EXACT_ALARM",
+        "NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
