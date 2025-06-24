@@ -12,4 +12,5 @@ export interface Notification {
    * UTC Timestamp in ms
    */
   readonly timestampMs: number;
+  isUnread: boolean;
 }

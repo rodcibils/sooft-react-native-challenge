@@ -88,7 +88,16 @@ export function Send() {
         }
       }
 
-      await sendLocalNotification(title, body, seconds);
+      await sendLocalNotification(
+        {
+          title,
+          body,
+          type,
+          timestampMs: Date.now() + seconds * 1000,
+          isUnread: true,
+        },
+        seconds
+      );
       console.debug("sendLocalNotification", "Done");
       reset();
     } catch (err) {
@@ -109,6 +118,7 @@ export function Send() {
     hasPermission,
     seconds,
     sendLocalNotification,
+    type,
     reset,
     hasAlarmPermission,
     openAlarmSettings,

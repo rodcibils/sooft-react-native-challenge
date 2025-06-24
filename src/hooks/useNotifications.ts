@@ -6,6 +6,20 @@ import notifee, {
 } from "@notifee/react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Platform } from "react-native";
+import { Notification, NotificationType } from "../model/notification";
+
+function formatTitle(title: string, type: NotificationType): string {
+  switch (type) {
+    case NotificationType.WARN:
+      return `⚠️ ${title}`;
+    case NotificationType.ERROR:
+      return `❌ ${title}`;
+    case NotificationType.INFO:
+      return `ℹ️ ${title}`;
+    default:
+      return title;
+  }
+}
 
 export default function useNotifications() {
   const [channelId, setChannelId] = useState<string>("");
@@ -27,7 +41,7 @@ export default function useNotifications() {
   }, []);
 
   const sendLocalNotification = useCallback(
-    async (title: string, body: string, delaySec: number) => {
+    async (data: Notification, delaySec: number) => {
       if (delaySec > 0) {
         const trigger: TimestampTrigger = {
           type: TriggerType.TIMESTAMP,
@@ -35,8 +49,8 @@ export default function useNotifications() {
         };
         await notifee.createTriggerNotification(
           {
-            title: title,
-            body: body,
+            title: formatTitle(data.title, data.type),
+            body: data.body,
             android: {
               channelId,
               smallIcon: "ic_launcher",
@@ -44,19 +58,25 @@ export default function useNotifications() {
                 id: "default",
               },
             },
+            data: {
+              data: JSON.stringify(data),
+            },
           },
           trigger
         );
       } else {
         await notifee.displayNotification({
-          title: title,
-          body: body,
+          title: formatTitle(data.title, data.type),
+          body: data.body,
           android: {
             channelId,
             smallIcon: "ic_launcher",
             pressAction: {
               id: "default",
             },
+          },
+          data: {
+            data: JSON.stringify(data),
           },
         });
       }
