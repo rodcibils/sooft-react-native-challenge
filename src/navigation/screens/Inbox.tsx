@@ -1,7 +1,15 @@
 import { Text } from "@react-navigation/elements";
+import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
+import useNotifications from "../../hooks/useNotifications";
 
 export function Inbox() {
+  const { setupEventListeners } = useNotifications();
+
+  useEffect(() => {
+    setupEventListeners();
+  }, [setupEventListeners]);
+
   return (
     <View style={styles.container}>
       <Text>Placeholder</Text>

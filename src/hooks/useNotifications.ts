@@ -1,12 +1,17 @@
 import notifee, {
   AndroidNotificationSetting,
   AuthorizationStatus,
+  EventType,
+  Notification,
   TimestampTrigger,
   TriggerType,
 } from "@notifee/react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Platform } from "react-native";
-import { Notification, NotificationType } from "../model/notification";
+import {
+  Notification as NotificationModel,
+  NotificationType,
+} from "../model/notification";
 
 function formatTitle(title: string, type: NotificationType): string {
   switch (type) {
@@ -19,6 +24,17 @@ function formatTitle(title: string, type: NotificationType): string {
     default:
       return title;
   }
+}
+
+function extractData(
+  notification: Notification | undefined
+): NotificationModel | undefined {
+  const strData = notification?.data?.data;
+  let data: NotificationModel | undefined;
+  if (strData !== undefined && typeof strData === "string") {
+    data = JSON.parse(strData);
+  }
+  return data;
 }
 
 export default function useNotifications() {
@@ -40,8 +56,53 @@ export default function useNotifications() {
     return true;
   }, []);
 
+  const setupEventListeners = useCallback(() => {
+    notifee.onForegroundEvent((event) => {
+      const { type, detail } = event;
+      const data = extractData(detail.notification);
+      if (data === undefined) {
+        return;
+      }
+      switch (type) {
+        case EventType.DELIVERED:
+          /**
+           * TODO
+           */
+          break;
+        case EventType.PRESS:
+          /**
+           * TODO
+           */
+          break;
+        default:
+          break;
+      }
+      notifee.onBackgroundEvent(async (event) => {
+        const { type, detail } = event;
+        const data = extractData(detail.notification);
+        if (data === undefined) {
+          return;
+        }
+        switch (type) {
+          case EventType.DELIVERED:
+            /**
+             * TODO
+             */
+            break;
+          case EventType.PRESS:
+            /**
+             * TODO
+             */
+            break;
+          default:
+            break;
+        }
+      });
+    });
+  }, []);
+
   const sendLocalNotification = useCallback(
-    async (data: Notification, delaySec: number) => {
+    async (data: NotificationModel, delaySec: number) => {
       if (delaySec > 0) {
         const trigger: TimestampTrigger = {
           type: TriggerType.TIMESTAMP,
@@ -115,5 +176,6 @@ export default function useNotifications() {
     hasPermission,
     hasAlarmPermission,
     openAlarmSettings,
+    setupEventListeners,
   };
 }
