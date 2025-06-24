@@ -1,10 +1,13 @@
 import { Text } from "@react-navigation/elements";
 import { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
+import NotificationItem from "../../components/NotificationItem";
 import useNotifications from "../../hooks/useNotifications";
+import { useNotificationStore } from "../../stores/useNotificationStore";
 
 export function Inbox() {
   const { setupEventListeners } = useNotifications();
+  const { inbox } = useNotificationStore();
 
   useEffect(() => {
     setupEventListeners();
@@ -12,7 +15,26 @@ export function Inbox() {
 
   return (
     <View style={styles.container}>
-      <Text>Placeholder</Text>
+      {inbox.length > 0 ? (
+        <FlatList
+          data={inbox}
+          renderItem={({ item }) => (
+            <NotificationItem
+              data={item}
+              onPress={() => {
+                /**
+                 * TODO
+                 */
+              }}
+            />
+          )}
+          keyExtractor={(item) => JSON.stringify(item.timestampMs)}
+        />
+      ) : (
+        <Text style={styles.emptyText}>
+          No notifications to display here yet
+        </Text>
+      )}
     </View>
   );
 }
@@ -22,5 +44,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  emptyText: {
+    padding: 12,
   },
 });

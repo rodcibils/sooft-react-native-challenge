@@ -6,12 +6,13 @@ import notifee, {
   TimestampTrigger,
   TriggerType,
 } from "@notifee/react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Platform } from "react-native";
 import {
   Notification as NotificationModel,
   NotificationType,
 } from "../model/notification";
+import { useNotificationStore } from "../stores/useNotificationStore";
 
 function formatTitle(title: string, type: NotificationType): string {
   switch (type) {
@@ -38,7 +39,7 @@ function extractData(
 }
 
 export default function useNotifications() {
-  const [channelId, setChannelId] = useState<string>("");
+  const { channelId, setChannelId, addToInbox } = useNotificationStore();
 
   const hasPermission = useCallback(async (): Promise<boolean> => {
     const settings = await notifee.getNotificationSettings();
@@ -65,9 +66,7 @@ export default function useNotifications() {
       }
       switch (type) {
         case EventType.DELIVERED:
-          /**
-           * TODO
-           */
+          addToInbox(data);
           break;
         case EventType.PRESS:
           /**
@@ -85,9 +84,7 @@ export default function useNotifications() {
         }
         switch (type) {
           case EventType.DELIVERED:
-            /**
-             * TODO
-             */
+            addToInbox(data);
             break;
           case EventType.PRESS:
             /**
@@ -99,7 +96,7 @@ export default function useNotifications() {
         }
       });
     });
-  }, []);
+  }, [addToInbox]);
 
   const sendLocalNotification = useCallback(
     async (data: NotificationModel, delaySec: number) => {
@@ -169,7 +166,7 @@ export default function useNotifications() {
       .catch((err) => {
         console.error("setupNotifications", err);
       });
-  }, []);
+  }, [setChannelId]);
 
   return {
     sendLocalNotification,
