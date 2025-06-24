@@ -17,7 +17,8 @@ import { hasTitleAndBody } from "../../utils/notificationUtils";
 
 export function Send() {
   const { colors } = useTheme();
-  const { hasPermission, sendLocalNotification } = useNotifications();
+  const { hasPermission, hasAlarmPermission, sendLocalNotification } =
+    useNotifications();
   const {
     title,
     body,
@@ -126,12 +127,22 @@ export function Send() {
                   );
                   return;
                 }
-                await sendLocalNotification({
-                  title,
-                  body,
-                  type,
-                  timestampMs: Date.now() + seconds * 1000,
-                });
+                if (seconds > 0) {
+                  const alarmPermissionsGranted = await hasAlarmPermission();
+                  if (!alarmPermissionsGranted) {
+                    Alert.alert(
+                      "Alarm Permissions Denied",
+                      "We need you to grant alarm permissions in order to be able to schedule notifications",
+                      [
+                        {
+                          text: "Ok",
+                        },
+                      ]
+                    );
+                    return;
+                  }
+                }
+                await sendLocalNotification(title, body, seconds);
               };
               setLoading(true);
               handleSend()

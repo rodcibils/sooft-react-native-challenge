@@ -1,12 +1,16 @@
-import notifee, { AuthorizationStatus } from "@notifee/react-native";
+import notifee, {
+  AndroidNotificationSetting,
+  AuthorizationStatus,
+  TimestampTrigger,
+  TriggerType,
+} from "@notifee/react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Platform } from "react-native";
-import { Notification } from "../model/notification";
 
 export default function useNotifications() {
   const [channelId, setChannelId] = useState<string>("");
 
-  const hasPermission = useCallback(async () => {
+  const hasPermission = useCallback(async (): Promise<boolean> => {
     const settings = await notifee.getNotificationSettings();
     const arePermissionsGranted =
       settings.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
@@ -14,19 +18,48 @@ export default function useNotifications() {
     return arePermissionsGranted;
   }, []);
 
+  const hasAlarmPermission = useCallback(async (): Promise<boolean> => {
+    if (Platform.OS === "android") {
+      const settings = await notifee.getNotificationSettings();
+      return settings.android.alarm === AndroidNotificationSetting.ENABLED;
+    }
+    return true;
+  }, []);
+
   const sendLocalNotification = useCallback(
-    async (data: Notification) => {
-      await notifee.displayNotification({
-        title: data.title,
-        body: data.body,
-        android: {
-          channelId,
-          smallIcon: "ic_launcher",
-          pressAction: {
-            id: "default",
+    async (title: string, body: string, delaySec: number) => {
+      if (delaySec > 0) {
+        const trigger: TimestampTrigger = {
+          type: TriggerType.TIMESTAMP,
+          timestamp: Date.now() + delaySec * 1000,
+        };
+        await notifee.createTriggerNotification(
+          {
+            title: title,
+            body: body,
+            android: {
+              channelId,
+              smallIcon: "ic_launcher",
+              pressAction: {
+                id: "default",
+              },
+            },
           },
-        },
-      });
+          trigger
+        );
+      } else {
+        await notifee.displayNotification({
+          title: title,
+          body: body,
+          android: {
+            channelId,
+            smallIcon: "ic_launcher",
+            pressAction: {
+              id: "default",
+            },
+          },
+        });
+      }
     },
     [channelId]
   );
@@ -51,5 +84,5 @@ export default function useNotifications() {
       });
   }, []);
 
-  return { sendLocalNotification, hasPermission };
+  return { sendLocalNotification, hasPermission, hasAlarmPermission };
 }
