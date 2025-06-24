@@ -17,8 +17,12 @@ import { hasTitleAndBody } from "../../utils/notificationUtils";
 
 export function Send() {
   const { colors } = useTheme();
-  const { hasPermission, hasAlarmPermission, sendLocalNotification } =
-    useNotifications();
+  const {
+    hasPermission,
+    hasAlarmPermission,
+    sendLocalNotification,
+    openAlarmSettings,
+  } = useNotifications();
   const {
     title,
     body,
@@ -67,7 +71,18 @@ export function Send() {
           Alert.alert(
             "Alarm Permissions Denied",
             "We need you to grant alarm permissions in order to schedule notifications",
-            [{ text: "Ok" }]
+            [
+              {
+                text: "Open Settings",
+                onPress() {
+                  openAlarmSettings();
+                },
+              },
+              {
+                text: "Close",
+                style: "destructive",
+              },
+            ]
           );
           return;
         }
@@ -87,15 +102,16 @@ export function Send() {
       setLoading(false);
     }
   }, [
+    validateForm,
     title,
     body,
-    seconds,
-    validateForm,
-    hasPermission,
-    hasAlarmPermission,
-    sendLocalNotification,
     setLoading,
+    hasPermission,
+    seconds,
+    sendLocalNotification,
     reset,
+    hasAlarmPermission,
+    openAlarmSettings,
   ]);
 
   return (

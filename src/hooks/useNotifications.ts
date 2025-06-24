@@ -64,6 +64,12 @@ export default function useNotifications() {
     [channelId]
   );
 
+  const openAlarmSettings = useCallback(() => {
+    notifee.openAlarmPermissionSettings().catch((err) => {
+      console.error("openAlarmPermissionSettings", err);
+    });
+  }, []);
+
   useEffect(() => {
     const setupNotifications = async () => {
       await notifee.requestPermission();
@@ -84,5 +90,10 @@ export default function useNotifications() {
       });
   }, []);
 
-  return { sendLocalNotification, hasPermission, hasAlarmPermission };
+  return {
+    sendLocalNotification,
+    hasPermission,
+    hasAlarmPermission,
+    openAlarmSettings,
+  };
 }
