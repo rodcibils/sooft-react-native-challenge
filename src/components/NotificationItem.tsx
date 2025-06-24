@@ -62,6 +62,13 @@ export default function NotificationItem(props: Props) {
             {new Date(data.timestampMs).toLocaleString()}
           </Text>
         </View>
+        {data.isUnread ? (
+          <View style={styles.unreadContainer}>
+            <View
+              style={[{ backgroundColor: colors.primary }, styles.unreadDot]}
+            />
+          </View>
+        ) : null}
       </View>
       <View style={[{ backgroundColor: colors.border }, styles.separator]} />
     </TouchableOpacity>
@@ -69,6 +76,8 @@ export default function NotificationItem(props: Props) {
 }
 
 const ICON_SIZE = 36;
+const UNREAD_DOT_SIZE = 16;
+
 const styles = StyleSheet.create({
   title: {
     fontSize: 18,
@@ -96,5 +105,15 @@ const styles = StyleSheet.create({
   separator: {
     width: "100%",
     height: 1,
+  },
+  unreadContainer: {
+    padding: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  unreadDot: {
+    width: UNREAD_DOT_SIZE,
+    height: UNREAD_DOT_SIZE,
+    borderRadius: UNREAD_DOT_SIZE,
   },
 });
