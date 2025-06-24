@@ -1,5 +1,6 @@
 import { Button, Text } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
+import { useCallback } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -8,6 +9,7 @@ import {
   View,
 } from "react-native";
 import Checkbox from "../../components/Checkbox";
+import LoadingOverlay from "../../components/LoadingOverlay";
 import useNotifications from "../../hooks/useNotifications";
 import { NotificationType } from "../../model/notification";
 import { useNotificationFormStore } from "../../stores/useNotificationFormStore";
@@ -21,14 +23,16 @@ export function Send() {
     body,
     type,
     seconds,
+    isLoading,
     setTitle,
     setBody,
     setType,
     setSeconds,
+    setLoading,
     reset,
   } = useNotificationFormStore();
 
-  const handleSendNotification = () => {
+  const handleSendNotification = useCallback(() => {
     if (!hasTitleAndBody(title, body)) {
       Alert.alert(
         "Title and body required",
@@ -41,6 +45,7 @@ export function Send() {
       );
       return;
     }
+    setLoading(true);
     sendLocalNotification({
       title,
       body,
@@ -53,73 +58,88 @@ export function Send() {
       })
       .catch((err) => {
         console.error("sendLocalNotification", err);
+        Alert.alert(
+          "Error sending notification",
+          "An unexpected error occurred when trying to send the notification",
+          [
+            {
+              text: "Close",
+            },
+          ]
+        );
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  };
+  }, [body, reset, seconds, sendLocalNotification, setLoading, title, type]);
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <Text style={styles.label}>Notification Title</Text>
-      <TextInput
-        style={[
-          styles.input,
-          { borderColor: colors.border, color: colors.text },
-        ]}
-        placeholder="Enter title"
-        placeholderTextColor={colors.border}
-        value={title}
-        onChangeText={setTitle}
-      />
+    <>
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <Text style={styles.label}>Notification Title</Text>
+        <TextInput
+          style={[
+            styles.input,
+            { borderColor: colors.border, color: colors.text },
+          ]}
+          placeholder="Enter title"
+          placeholderTextColor={colors.border}
+          value={title}
+          onChangeText={setTitle}
+        />
 
-      <Text style={styles.label}>Notification Body</Text>
-      <TextInput
-        style={[
-          styles.input,
-          styles.multilineInput,
-          { borderColor: colors.border, color: colors.text },
-        ]}
-        placeholder="Enter body text"
-        placeholderTextColor={colors.border}
-        value={body}
-        onChangeText={setBody}
-        multiline
-      />
+        <Text style={styles.label}>Notification Body</Text>
+        <TextInput
+          style={[
+            styles.input,
+            styles.multilineInput,
+            { borderColor: colors.border, color: colors.text },
+          ]}
+          placeholder="Enter body text"
+          placeholderTextColor={colors.border}
+          value={body}
+          onChangeText={setBody}
+          multiline
+        />
 
-      <Text style={styles.label}>Notification Type</Text>
-      <View>
-        {Object.values(NotificationType).map((t) => (
-          <Checkbox
-            key={t}
-            label={t}
-            isChecked={t === type}
-            onPress={() => {
-              setType(t);
-            }}
-          />
-        ))}
-      </View>
+        <Text style={styles.label}>Notification Type</Text>
+        <View>
+          {Object.values(NotificationType).map((t) => (
+            <Checkbox
+              key={t}
+              label={t}
+              isChecked={t === type}
+              onPress={() => {
+                setType(t);
+              }}
+            />
+          ))}
+        </View>
 
-      <Text style={styles.label}>Seconds Delay</Text>
-      <TextInput
-        style={[
-          styles.input,
-          { borderColor: colors.border, color: colors.text },
-        ]}
-        placeholder="Enter seconds - Now if missing"
-        placeholderTextColor={colors.border}
-        keyboardType="numeric"
-        value={seconds.toString()}
-        onChangeText={(text) => {
-          const numeric = text.replace(/[^0-9]/g, "");
-          setSeconds(numeric);
-        }}
-      />
+        <Text style={styles.label}>Seconds Delay</Text>
+        <TextInput
+          style={[
+            styles.input,
+            { borderColor: colors.border, color: colors.text },
+          ]}
+          placeholder="Enter seconds - Now if missing"
+          placeholderTextColor={colors.border}
+          keyboardType="numeric"
+          value={seconds.toString()}
+          onChangeText={(text) => {
+            const numeric = text.replace(/[^0-9]/g, "");
+            setSeconds(numeric);
+          }}
+        />
 
-      <View style={styles.buttonWrapper}>
-        <Button onPress={handleSendNotification}>
-          Send Local Notification
-        </Button>
-      </View>
-    </KeyboardAvoidingView>
+        <View style={styles.buttonWrapper}>
+          <Button onPress={handleSendNotification}>
+            Send Local Notification
+          </Button>
+        </View>
+      </KeyboardAvoidingView>
+      <LoadingOverlay visible={isLoading} />
+    </>
   );
 }
 
