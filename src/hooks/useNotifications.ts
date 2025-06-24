@@ -57,26 +57,9 @@ export default function useNotifications() {
     return true;
   }, []);
 
-  const setupEventListeners = useCallback(() => {
-    notifee.onForegroundEvent((event) => {
-      const { type, detail } = event;
-      const data = extractData(detail.notification);
-      if (data === undefined) {
-        return;
-      }
-      switch (type) {
-        case EventType.DELIVERED:
-          addToInbox(data);
-          break;
-        case EventType.PRESS:
-          /**
-           * TODO
-           */
-          break;
-        default:
-          break;
-      }
-      notifee.onBackgroundEvent(async (event) => {
+  const setupEventListeners = useCallback(
+    (onPress: (notification: NotificationModel) => void) => {
+      notifee.onForegroundEvent((event) => {
         const { type, detail } = event;
         const data = extractData(detail.notification);
         if (data === undefined) {
@@ -87,16 +70,32 @@ export default function useNotifications() {
             addToInbox(data);
             break;
           case EventType.PRESS:
-            /**
-             * TODO
-             */
+            onPress(data);
             break;
           default:
             break;
         }
+        notifee.onBackgroundEvent(async (event) => {
+          const { type, detail } = event;
+          const data = extractData(detail.notification);
+          if (data === undefined) {
+            return;
+          }
+          switch (type) {
+            case EventType.DELIVERED:
+              addToInbox(data);
+              break;
+            case EventType.PRESS:
+              onPress(data);
+              break;
+            default:
+              break;
+          }
+        });
       });
-    });
-  }, [addToInbox]);
+    },
+    [addToInbox]
+  );
 
   const sendLocalNotification = useCallback(
     async (data: NotificationModel, delaySec: number) => {

@@ -12,8 +12,10 @@ export function Inbox() {
   const { inbox } = useNotificationStore();
 
   useEffect(() => {
-    setupEventListeners();
-  }, [setupEventListeners]);
+    setupEventListeners((notification) => {
+      navigation.navigate("Detail", { notification });
+    });
+  }, [navigation, setupEventListeners]);
 
   return (
     <View style={styles.container}>
