@@ -1,8 +1,8 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Text } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Notification, NotificationType } from "../model/notification";
+import { Notification } from "../model/notification";
+import NotificationIcon from "./NotificationIcon";
 
 interface Props {
   data: Notification;
@@ -13,40 +13,15 @@ export default function NotificationItem(props: Props) {
   const { data, onPress } = props;
   const { colors } = useTheme();
 
-  const getIcon = () => {
-    switch (data.type) {
-      case NotificationType.INFO:
-        return (
-          <MaterialIcons
-            name="info-outline"
-            size={ICON_SIZE}
-            color={colors.text}
-          />
-        );
-      case NotificationType.ERROR:
-        return (
-          <MaterialIcons name="cancel" size={ICON_SIZE} color={colors.text} />
-        );
-      case NotificationType.WARN:
-        return (
-          <MaterialIcons
-            name="warning-amber"
-            size={ICON_SIZE}
-            color={colors.text}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <TouchableOpacity
       style={[{ backgroundColor: colors.card }, styles.container]}
       onPress={onPress}
     >
       <View style={styles.innerContainer}>
-        <View style={styles.iconContainer}>{getIcon()}</View>
+        <View style={styles.iconContainer}>
+          <NotificationIcon type={data.type} size={ICON_SIZE} />
+        </View>
         <View style={styles.dataContainer}>
           <Text
             style={[styles.title, { color: colors.primary }]}
