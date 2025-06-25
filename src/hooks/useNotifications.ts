@@ -39,7 +39,8 @@ function extractData(
 }
 
 export default function useNotifications() {
-  const { channelId, setChannelId, addToInbox } = useNotificationStore();
+  const { channelId, setChannelId, addToInbox, unreadCount } =
+    useNotificationStore();
 
   const hasPermission = useCallback(async (): Promise<boolean> => {
     const settings = await notifee.getNotificationSettings();
@@ -166,6 +167,12 @@ export default function useNotifications() {
         console.error("setupNotifications", err);
       });
   }, [setChannelId]);
+
+  useEffect(() => {
+    notifee.setBadgeCount(unreadCount).catch((err) => {
+      console.error("setBadgeCount", err);
+    });
+  }, [unreadCount]);
 
   return {
     sendLocalNotification,
