@@ -4,6 +4,7 @@ import { Notification } from "../model/notification";
 interface NotificationState {
   inbox: Notification[];
   channelId: string;
+  unreadCount: number;
   addToInbox: (notification: Notification) => void;
   setChannelId: (channelId: string) => void;
   markAsRead: (timestampMs: number) => void;
@@ -12,9 +13,14 @@ interface NotificationState {
 export const useNotificationStore = create<NotificationState>((set, get) => ({
   inbox: [],
   channelId: "",
+  unreadCount: 0,
   addToInbox: (notification) => {
     const currentInbox = get().inbox;
-    set({ inbox: [notification, ...currentInbox] });
+    const updatedInbox = [notification, ...currentInbox];
+    const unreadCount = updatedInbox.reduce((count, item) => {
+      return item.isUnread === true ? count + 1 : count;
+    }, 0);
+    set({ inbox: updatedInbox, unreadCount });
   },
   setChannelId: (channelId) => {
     set({ channelId });
@@ -31,6 +37,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         i.isUnread = false;
       }
     });
-    set({ inbox: currentInbox });
+    const unreadCount = currentInbox.reduce((count, item) => {
+      return item.isUnread === true ? count + 1 : count;
+    }, 0);
+    set({ inbox: currentInbox, unreadCount });
   },
 }));

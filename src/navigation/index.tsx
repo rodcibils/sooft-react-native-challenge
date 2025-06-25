@@ -2,6 +2,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStaticNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import InboxIcon from "../components/InboxIcon";
 import { Notification } from "../model/notification";
 import Detail from "./screens/Detail";
 import { Inbox } from "./screens/Inbox";
@@ -15,7 +16,7 @@ const HomeTabs = createBottomTabNavigator({
       options: {
         title: "Inbox",
         tabBarIcon: ({ color, size }) => (
-          <MaterialIcons name="inbox" size={size} color={color} />
+          <InboxIcon color={color} size={size} />
         ),
       },
     },
