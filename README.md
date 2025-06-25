@@ -1,66 +1,90 @@
-# Starter Template with React Navigation
+# SOOFT React Native Challenge
 
-This is a minimal starter template for React Native apps using Expo and React Navigation.
+This project is a technical challenge built with **Expo**, **React Native**, and **TypeScript**.
 
-It includes the following:
-
-- Example [Native Stack](https://reactnavigation.org/docs/native-stack-navigator) with a nested [Bottom Tab](https://reactnavigation.org/docs/bottom-tab-navigator)
-- Web support with [React Native for Web](https://necolas.github.io/react-native-web/)
-- TypeScript support and configured for React Navigation
-- Automatic [deep link](https://reactnavigation.org/docs/deep-linking) and [URL handling configuration](https://reactnavigation.org/docs/configuring-links)
-- Theme support [based on system appearance](https://reactnavigation.org/docs/themes/#using-the-operating-system-preferences)
-- Expo [Development Build](https://docs.expo.dev/develop/development-builds/introduction/) with [Continuous Native Generation](https://docs.expo.dev/workflow/continuous-native-generation/)
-- Edge-to-edge configured on Android with [`react-native-edge-to-edge`](https://www.npmjs.com/package/react-native-edge-to-edge)
-
-## Getting Started
-
-1. Create a new project using this template:
-
-   ```sh
-   npx create-expo-app@latest --template react-navigation/template
-   ```
-
-2. Edit the `app.json` file to configure the `name`, `slug`, `scheme` and bundle identifiers (`ios.bundleIdentifier` and `android.bundleIdentifier`) for your app.
-
-3. Edit the `src/App.tsx` file to start working on your app.
-
-## Running the app
-
-- Install the dependencies:
-
-  ```sh
-  npm install
-  ```
-
-- Start the development server:
-
-  ```sh
-  npm start
-  ```
-
-- Build and run iOS and Android development builds:
-
-  ```sh
-  npm run ios
-  # or
-  npm run android
-  ```
-
-- In the terminal running the development server, press `i` to open the iOS simulator, `a` to open the Android device or emulator, or `w` to open the web browser.
-
-## Notes
-
-This project uses a [development build](https://docs.expo.dev/develop/development-builds/introduction/) and cannot be run with [Expo Go](https://expo.dev/go). To run the app with Expo Go, edit the `package.json` file, remove the `expo-dev-client` package and `--dev-client` flag from the `start` script.
-
-We highly recommend using the development builds for normal development and testing.
-
-The `ios` and `android` folder are gitignored in the project by default as they are automatically generated during the build process ([Continuous Native Generation](https://docs.expo.dev/workflow/continuous-native-generation/)). This means that you should not edit these folders directly and use [config plugins](https://docs.expo.dev/config-plugins/) instead. However, if you need to edit these folders, you can remove them from the `.gitignore` file so that they are tracked by git.
-
-## Resources
-
-- [React Navigation documentation](https://reactnavigation.org/)
-- [Expo documentation](https://docs.expo.dev/)
+It demonstrates modern mobile development practices, including local push notifications, modular state management using Zustand, and custom UI components following best practices.
 
 ---
 
-Demo assets are from [lucide.dev](https://lucide.dev/)
+## 🛠️ Tech Stack
+
+- **Expo** (Bare Workflow)
+- **React Native**
+- **TypeScript**
+- **Zustand** for state management
+- **Notifee** for local push notifications — the go-to solution recommended by the React Native Firebase team
+- **React Navigation** (based on the [official Expo template](https://reactnavigation.org/docs/getting-started/))
+- **Jest** for unit testing
+- **Husky** for Git hook automation (linting & testing)
+
+---
+
+## 🚀 Getting Started
+
+To run the project locally, follow these steps:
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/rodcibils/sooft-react-native-challenge.git
+cd sooft-react-native-challenge
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Run the app
+
+Run on iOS simulator:
+
+```bash
+npx expo run:ios
+```
+
+Run on Android emulator:
+
+```bash
+npx expo run:android
+```
+
+---
+
+## ✨ Features
+
+- **Dark & Light mode support**  
+  Automatically adapts to the device’s current theme using React Navigation's built-in theming support.
+
+- **Send local notifications (immediate or scheduled)**  
+  Use the "Send" tab to send a local push notification instantly or with a custom delay in seconds. The form supports title, body, and selecting one of three types: Info, Error, or Warning.
+
+- **Unread badge on Inbox tab + App Icon Badge (iOS only)**  
+  The Inbox tab icon shows a badge with the unread count. The app icon badge is also updated (only supported on iOS).  
+  → [Notifee iOS badge support](https://notifee.app/react-native/docs/ios/badges)
+
+- **Pre-commit checks via Husky**  
+  Automatically runs unit tests and linting before every commit using a Husky pre-commit hook.
+
+- **Notification history in the Inbox tab**  
+  Notifications sent or received are listed chronologically in the Inbox tab.
+
+- **Unread indicator on each notification**  
+  Unread notifications show a small round dot. Tapping a notification navigates the user to a detail screen.
+
+- **State management with Zustand**  
+  All local state and data handling is powered by Zustand, including notification inbox, UI flags, and shared values.
+
+- **Encapsulated notification logic with custom hook**  
+  The Notifee integration (permissions, listeners, local pushes) is abstracted into a reusable hook.
+
+- **Deep linking via notifications**  
+  Pressing a notification (foreground or background) opens the app and navigates to the detail screen, marking the item as read.
+
+- **Custom linting and Prettier configuration for VSCode**  
+  The repository includes editor settings to ensure consistent formatting and linting in development.
+
+- **Ephemeral in-memory data**  
+  All data is stored in memory — there’s no disk or session persistence.
+
